@@ -1,0 +1,21 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentScrum.Web", "AgentScrum.Web\AgentScrum.Web.csproj", "{F7A5179D-FCDA-4089-BAF0-307E71A8C46B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A9F43F8D-1E73-41E3-B7CF-D8363E9D9BD7}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F7A5179D-FCDA-4089-BAF0-307E71A8C46B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7A5179D-FCDA-4089-BAF0-307E71A8C46B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7A5179D-FCDA-4089-BAF0-307E71A8C46B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A5179D-FCDA-4089-BAF0-307E71A8C46B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,6 @@
+﻿services:
+  agentscrum.web:
+    image: agentscrum.web
+    build:
+      context: .
+      dockerfile: AgentScrum.Web/Dockerfile
