@@ -4,3 +4,22 @@
     build:
       context: .
       dockerfile: AgentScrum.Web/Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=agentscrum;Username=postgres;Password=postgres
+
+  postgres:
+    image: postgres:17
+    container_name: agentscrum-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=agentscrum
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
