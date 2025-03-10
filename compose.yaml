@@ -11,8 +11,9 @@
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=agentscrum;Username=postgres;Password=postgres
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000
+      - GroqApiKey=your-groq-api-key-placeholder
     ports:
-      - "5000:5000"
+      - "5555:5000"
     networks:
       - agentscrum-network
 

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using AgentScrum.Web.Adapters.Contracts.GoogleDocs;
 using Microsoft.AspNetCore.Mvc;
 using AgentScrum.Web.Models;
 using Microsoft.AspNetCore.Identity;
@@ -11,11 +12,13 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly SignInManager<IdentityUser> _signInManager;
     private static readonly Dictionary<string, List<ChatMessage>> _userChatHistory = new();
+    private readonly IGoogleDriveAdapter _googleDriveAdapter;
 
-    public HomeController(ILogger<HomeController> logger, SignInManager<IdentityUser> signInManager)
+    public HomeController(ILogger<HomeController> logger, SignInManager<IdentityUser> signInManager, IGoogleDriveAdapter googleDriveAdapter)
     {
         _logger = logger;
         _signInManager = signInManager;
+        _googleDriveAdapter = googleDriveAdapter;
     }
 
     public IActionResult Index()
@@ -44,7 +47,7 @@ public class HomeController : Controller
             
             return View("Chat", viewModel);
         }
-        
+        var id = _googleDriveAdapter.CreateDocument($"agent-scrum-{Guid.NewGuid().ToString()}", "<h1>Hello!</h1>"); 
         return View();
     }
 

@@ -1,7 +1,15 @@
+using AgentScrum.Web.Adapters.Contracts;
+using AgentScrum.Web.Adapters.Contracts.GoogleDocs;
+using AgentScrum.Web.Adapters.Contracts.Groq;
+using AgentScrum.Web.Adapters.Implementations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using AgentScrum.Web.Data;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.Logging;
+using Google.Apis.Drive.v3;
+using Google.Apis.Services;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +24,32 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IGroqAdapter>(provider => {
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var apiKey = configuration["GroqApiKey"] ?? 
+                 throw new InvalidOperationException("Groq API key not found in configuration.");
+    return new GroqAdapter(apiKey);
+});
+
+builder.Services.AddScoped<IChatGptAdapter, ChatGPTAdapter>();
+
+// Add DriveService registration
+builder.Services.AddSingleton<DriveService>(provider => {
+    // Configure and create your DriveService instance here
+    // This will depend on how you're authenticating with Google APIs
+    // Example:
+     var credential = GoogleCredential.FromFile("agentscrum-creds.json")
+         .CreateScoped(DriveService.Scope.Drive);
+     return new DriveService(new BaseClientService.Initializer
+     {
+    HttpClientInitializer = credential,
+         ApplicationName = "AgentScrum API adapter"
+     });
+});
+
+// Now this will work because DriveService is registered
+builder.Services.AddScoped<IGoogleDriveAdapter, GoogleDriveAdapter>();
 
 var app = builder.Build();
 
