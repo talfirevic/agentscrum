@@ -2,25 +2,19 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
-<ul class="navbar-nav">
+<div class="flex items-center space-x-4">
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
-        </li>
-        <li class="nav-item">
-            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-            </form>
-        </li>
+        <div class="text-sm text-gray-500">
+            <a class="hover:text-gray-700" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
+        </div>
+        <form class="inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button type="submit" class="text-sm text-gray-500 hover:text-gray-700 bg-transparent border-0 p-0">Logout</button>
+        </form>
     }
     else
     {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-        </li>
+        <a class="text-sm text-gray-500 hover:text-gray-700" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        <a class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-md" asp-area="Identity" asp-page="/Account/Login">Login</a>
     }
-</ul>
+</div>

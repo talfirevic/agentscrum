@@ -1,6 +1,7 @@
 ﻿services:
   agentscrum.web:
     image: agentscrum.web
+    container_name: web
     build:
       context: .
       dockerfile: AgentScrum.Web/Dockerfile
@@ -8,10 +9,16 @@
       - postgres
     environment:
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=agentscrum;Username=postgres;Password=postgres
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+    ports:
+      - "5000:5000"
+    networks:
+      - agentscrum-network
 
   postgres:
     image: postgres:17
-    container_name: agentscrum-postgres
+    container_name: db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -20,6 +27,12 @@
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - agentscrum-network
 
 volumes:
   postgres-data:
+
+networks:
+  agentscrum-network:
+    driver: bridge

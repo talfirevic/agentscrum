@@ -1,0 +1,95 @@
+/* Custom styles for Identity pages */
+
+/* Form controls */
+.form-control {
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+}
+
+/* Buttons */
+.btn-primary {
+    @apply inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
+}
+
+.btn-secondary {
+    @apply inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
+}
+
+.btn-danger {
+    @apply inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500;
+}
+
+/* Validation */
+.text-danger {
+    @apply text-red-500 text-sm mt-1;
+}
+
+.validation-summary-errors {
+    @apply bg-red-50 border-l-4 border-red-400 p-4 mb-4;
+}
+
+.validation-summary-errors ul {
+    @apply list-disc pl-5 text-sm text-red-700;
+}
+
+/* Cards */
+.card {
+    @apply bg-white overflow-hidden shadow rounded-lg;
+}
+
+.card-header {
+    @apply px-4 py-5 sm:px-6 bg-gray-50 border-b border-gray-200;
+}
+
+.card-body {
+    @apply px-4 py-5 sm:p-6;
+}
+
+.card-footer {
+    @apply px-4 py-4 sm:px-6 bg-gray-50 border-t border-gray-200;
+}
+
+/* Alerts */
+.alert {
+    @apply rounded-md p-4 mb-4;
+}
+
+.alert-success {
+    @apply bg-green-50 border-l-4 border-green-400;
+}
+
+.alert-success p {
+    @apply text-sm text-green-700;
+}
+
+.alert-danger {
+    @apply bg-red-50 border-l-4 border-red-400;
+}
+
+.alert-danger p {
+    @apply text-sm text-red-700;
+}
+
+.alert-info {
+    @apply bg-blue-50 border-l-4 border-blue-400;
+}
+
+.alert-info p {
+    @apply text-sm text-blue-700;
+}
+
+/* Nav tabs */
+.nav-tabs {
+    @apply border-b border-gray-200 flex space-x-8;
+}
+
+.nav-tabs .nav-item {
+    @apply border-b-2 border-transparent;
+}
+
+.nav-tabs .nav-link {
+    @apply py-4 px-1 text-center border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300;
+}
+
+.nav-tabs .nav-link.active {
+    @apply border-blue-500 text-blue-600;
+} 

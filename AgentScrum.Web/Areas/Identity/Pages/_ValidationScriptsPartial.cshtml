@@ -1,0 +1,32 @@
+<environment include="Development">
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+</environment>
+<environment exclude="Development">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"
+            asp-fallback-src="~/lib/jquery-validation/dist/jquery.validate.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.validator"
+            crossorigin="anonymous"
+            integrity="sha512-37T7leoNS06R80c8Ulq7cdCDU5MNQBwlYoy1TX/WUsLFC2eYNqtKlV0QjH7r8JpG/S0GUMZwebnVFLPd6SU5yg==">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"
+            asp-fallback-src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.validator && window.jQuery.validator.unobtrusive"
+            crossorigin="anonymous"
+            integrity="sha512-o6XqxgrUsKmchwy9G5VRNWSSxTS4Urr4loO6/0hYdpWmFUfHqGzawGxeQGMDqYzxjY9sbktPbNlkIQJWagVZQg==">
+    </script>
+</environment>
+
+<script>
+    // Custom styling for validation errors using Tailwind CSS
+    $.validator.setDefaults({
+        highlight: function(element) {
+            $(element).addClass('border-red-500 focus:ring-red-500 focus:border-red-500').removeClass('border-gray-300 focus:ring-blue-500 focus:border-blue-500');
+            $(element).next('.text-danger').addClass('text-red-500 text-sm mt-1');
+        },
+        unhighlight: function(element) {
+            $(element).removeClass('border-red-500 focus:ring-red-500 focus:border-red-500').addClass('border-gray-300 focus:ring-blue-500 focus:border-blue-500');
+            $(element).next('.text-danger').removeClass('text-red-500 text-sm mt-1');
+        }
+    });
+</script> 
