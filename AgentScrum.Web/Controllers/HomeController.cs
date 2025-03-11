@@ -47,7 +47,7 @@ public class HomeController : Controller
             
             return View("Chat", viewModel);
         }
-        var id = _googleDriveAdapter.CreateDocument($"agent-scrum-{Guid.NewGuid().ToString()}", "<h1>Hello!</h1>"); 
+        var response = _googleDriveAdapter.CreateDocument($"agent-scrum-{Guid.NewGuid().ToString()}", "<h1>Hello!</h1>", "toni@alfirevic.co"); 
         return View();
     }
 
