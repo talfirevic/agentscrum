@@ -1,7 +1,9 @@
 using System.Text;
 using System.Text.Json;
 using AgentScrum.Web.Adapters.Contracts.GoogleDocs;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
+using Google.Apis.Services;
 using Markdig;
 
 namespace AgentScrum.Web.Adapters.Implementations;
@@ -11,7 +13,8 @@ namespace AgentScrum.Web.Adapters.Implementations;
 /// </summary>
 public class GoogleDriveAdapter : IGoogleDriveAdapter
 {
-    private readonly DriveService _driveService;
+    private readonly Func<string, DriveService> _driveServiceFactory;
+    private DriveService? _driveService;
     
     /// <summary>
     /// Base URL for Google Docs documents.
@@ -26,6 +29,48 @@ public class GoogleDriveAdapter : IGoogleDriveAdapter
     public GoogleDriveAdapter(DriveService driveService)
     {
         _driveService = driveService ?? throw new ArgumentNullException(nameof(driveService));
+        _driveServiceFactory = _ => _driveService;
+    }
+    
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GoogleDriveAdapter"/> class with a factory function.
+    /// </summary>
+    /// <param name="driveServiceFactory">A factory function that creates a DriveService from credentials JSON.</param>
+    public GoogleDriveAdapter(Func<string, DriveService> driveServiceFactory)
+    {
+        _driveServiceFactory = driveServiceFactory ?? throw new ArgumentNullException(nameof(driveServiceFactory));
+    }
+    
+    /// <summary>
+    /// Sets the credentials JSON to use for creating the DriveService.
+    /// </summary>
+    /// <param name="credentialsJson">The Google service account credentials JSON.</param>
+    public void SetCredentials(string credentialsJson)
+    {
+        if (string.IsNullOrEmpty(credentialsJson))
+        {
+            throw new ArgumentException("Credentials JSON cannot be null or empty.", nameof(credentialsJson));
+        }
+        
+        _driveService = CreateDriveService(credentialsJson);
+    }
+    
+    /// <summary>
+    /// Creates a DriveService from credentials JSON.
+    /// </summary>
+    /// <param name="credentialsJson">The Google service account credentials JSON.</param>
+    /// <returns>A configured DriveService.</returns>
+    private DriveService CreateDriveService(string credentialsJson)
+    {
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(credentialsJson));
+        var credential = GoogleCredential.FromStream(stream)
+            .CreateScoped(DriveService.Scope.Drive);
+            
+        return new DriveService(new BaseClientService.Initializer
+        {
+            HttpClientInitializer = credential,
+            ApplicationName = "AgentScrum API adapter"
+        });
     }
 
     /// <summary>
@@ -41,6 +86,12 @@ public class GoogleDriveAdapter : IGoogleDriveAdapter
     {
         if (name == null) throw new ArgumentNullException(nameof(name));
         if (markdownContent == null) throw new ArgumentNullException(nameof(markdownContent));
+        
+        // Ensure we have a DriveService
+        if (_driveService == null)
+        {
+            throw new InvalidOperationException("DriveService is not initialized. Call SetCredentials first or use the constructor with a DriveService.");
+        }
 
         // Convert markdown to HTML using Markdig
         string htmlContent = Markdown.ToHtml(markdownContent);
@@ -110,6 +161,11 @@ public class GoogleDriveAdapter : IGoogleDriveAdapter
     {
         if (fileId == null) throw new ArgumentNullException(nameof(fileId));
         if (email == null) throw new ArgumentNullException(nameof(email));
+        
+        if (_driveService == null)
+        {
+            throw new InvalidOperationException("DriveService is not initialized.");
+        }
 
         // Create a new permission
         var permission = new Google.Apis.Drive.v3.Data.Permission

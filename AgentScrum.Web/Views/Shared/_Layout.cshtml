@@ -66,11 +66,71 @@
     </nav>
 </header>
 
-<main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="px-4 py-6 sm:px-0">
-        @RenderBody()
-    </div>
-</main>
+<div class="flex">
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="w-64 bg-white shadow-sm min-h-screen">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Navigation</h2>
+                <nav class="space-y-2">
+                    <a href="@Url.Action("Index", "Home")" 
+                       class="flex items-center px-3 py-2 text-sm font-medium rounded-md @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "bg-primary-50 text-primary-700" : "text-gray-700 hover:bg-gray-100")">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Home
+                    </a>
+                    <a href="@Url.Action("Index", "Settings")" 
+                       class="flex items-center px-3 py-2 text-sm font-medium rounded-md @(ViewContext.RouteData.Values["controller"].ToString() == "Settings" ? "bg-primary-50 text-primary-700" : "text-gray-700 hover:bg-gray-100")">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Settings
+                    </a>
+                </nav>
+            </div>
+        </div>
+    }
+
+    <main class="@(User.Identity?.IsAuthenticated == true ? "flex-1" : "max-w-7xl mx-auto w-full") py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-green-700">@TempData["SuccessMessage"]</p>
+                        </div>
+                    </div>
+                </div>
+            }
+            
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <div asp-validation-summary="All" class="text-sm text-red-700"></div>
+                        </div>
+                    </div>
+                </div>
+            }
+            
+            @RenderBody()
+        </div>
+    </main>
+</div>
 
 <footer class="bg-white mt-12 border-t border-gray-200">
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

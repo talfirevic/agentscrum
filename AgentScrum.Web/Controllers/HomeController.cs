@@ -46,8 +46,9 @@ public class HomeController : Controller
             };
             
             return View("Chat", viewModel);
-        }
-        var response = _googleDriveAdapter.CreateDocument($"agent-scrum-{Guid.NewGuid().ToString()}", "<h1>Hello!</h1>", "toni@alfirevic.co"); 
+        } 
+        /* var response = _googleDriveAdapter.CreateDocument($"agent-scrum-{Guid.NewGuid().ToString()}", "<h1>Hello!</h1>", "toni@alfirevic.co"); 
+        */ 
         return View();
     }
 
