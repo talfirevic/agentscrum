@@ -1,0 +1,150 @@
+@model AgentScrum.Web.Models.Prompt
+@using Markdig;
+
+@{
+    ViewData["Title"] = "Prompt Details";
+    var versions = ViewBag.Versions as List<AgentScrum.Web.Models.Prompt>;
+    var markdownPipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+    var htmlContent = Markdown.ToHtml(Model.Content, markdownPipeline);
+}
+
+<div class="max-w-full mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="md:flex md:items-center md:justify-between mb-8">
+        <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                @Model.Name
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">
+                @Model.Description
+            </p>
+        </div>
+        <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+            <a asp-action="Index" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+                </svg>
+                Back to List
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Edit
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 border-b border-gray-200 sm:px-6 bg-gray-50">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 flex items-center">
+                        <svg class="h-6 w-6 text-blue-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Prompt Details
+                    </h3>
+                </div>
+                <div class="flex items-center space-x-2">
+                    @if (!string.IsNullOrEmpty(Model.Category))
+                    {
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            @Model.Category
+                        </span>
+                    }
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        v@(Model.Version)
+                    </span>
+                    @if (Model.IsCurrentVersion)
+                    {
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                            Current
+                        </span>
+                    }
+                </div>
+            </div>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                Created on @Model.CreatedAt.ToString("MMM dd, yyyy") by @Model.CreatedBy
+            </p>
+        </div>
+        
+        <div class="px-4 py-5 sm:p-6">
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
+                <!-- Versions sidebar -->
+                <div class="lg:col-span-1">
+                    <div class="bg-gray-50 rounded-md p-4 border border-gray-200">
+                        <h4 class="text-base font-medium text-gray-900 mb-3">Versions</h4>
+                        <div class="space-y-2">
+                            @if (versions != null && versions.Any())
+                            {
+                                foreach (var version in versions)
+                                {
+                                    <a asp-action="ViewVersion" asp-route-id="@version.Id" 
+                                       class="flex items-center p-2 rounded-md @(version.Id == Model.Id ? "bg-blue-50 border border-blue-200" : "hover:bg-gray-100")">
+                                        <span class="text-sm font-medium @(version.Id == Model.Id ? "text-blue-700" : "text-gray-700")">
+                                            v@(version.Version)
+                                        </span>
+                                        <span class="ml-2 text-xs text-gray-500">
+                                            @version.CreatedAt.ToString("MMM dd, yyyy")
+                                        </span>
+                                        @if (version.IsCurrentVersion)
+                                        {
+                                            <span class="ml-auto px-1.5 py-0.5 text-xs rounded-full bg-purple-100 text-purple-800">
+                                                Current
+                                            </span>
+                                        }
+                                    </a>
+                                }
+                            }
+                            else
+                            {
+                                <p class="text-sm text-gray-500">No versions available</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Content -->
+                <div class="lg:col-span-3">
+                    <div class="border border-gray-200 rounded-md">
+                        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200 flex justify-between items-center">
+                            <h4 class="text-base font-medium text-gray-900">Prompt Content</h4>
+                            <div>
+                                <button id="viewRawToggle" class="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    View Raw
+                                </button>
+                            </div>
+                        </div>
+                        <div id="renderedContent" class="p-4 prose max-w-none">
+                            @Html.Raw(htmlContent)
+                        </div>
+                        <div id="rawContent" class="hidden">
+                            <pre class="p-4 bg-gray-50 text-sm text-gray-800 overflow-auto whitespace-pre-wrap rounded-b-md">@Model.Content</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Toggle between rendered and raw content
+        document.getElementById('viewRawToggle').addEventListener('click', function() {
+            const renderedContent = document.getElementById('renderedContent');
+            const rawContent = document.getElementById('rawContent');
+            const button = document.getElementById('viewRawToggle');
+            
+            if (renderedContent.classList.contains('hidden')) {
+                renderedContent.classList.remove('hidden');
+                rawContent.classList.add('hidden');
+                button.textContent = 'View Raw';
+            } else {
+                renderedContent.classList.add('hidden');
+                rawContent.classList.remove('hidden');
+                button.textContent = 'View Rendered';
+            }
+        });
+    </script>
+} 

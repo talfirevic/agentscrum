@@ -1,0 +1,9 @@
+@{
+    Layout = "/Views/Shared/_IdentityLayout.cshtml";
+}
+
+@RenderBody()
+
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false)
+} 

@@ -1,0 +1,113 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="max-w-full mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left sidebar placeholder -->
+        <div class="hidden lg:block lg:col-span-2">
+            <!-- This is just a spacer to align with any left menu -->
+        </div>
+        
+        <!-- Main content including header -->
+        <div class="lg:col-span-10">
+            <div class="md:flex md:items-center md:justify-between mb-8">
+                <div class="flex-1 min-w-0">
+                    <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                        Admin Dashboard
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500">
+                        Administrative controls and system management
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 border-b border-gray-200 sm:px-6 bg-gray-50">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 flex items-center">
+                        <svg class="h-6 w-6 text-blue-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                        Admin Controls
+                    </h3>
+                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                        This area is restricted to administrators only
+                    </p>
+                </div>
+                
+                <div class="px-4 py-5 sm:p-6">
+                    <p>Welcome to the admin dashboard. This page is only accessible to users with the Admin role.</p>
+                    
+                    <!-- Add your admin-specific content here -->
+                    <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        <!-- Prompt Management Card -->
+                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                            <div class="px-4 py-5 sm:p-6">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
+                                        <svg class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt class="text-sm font-medium text-gray-500 truncate">
+                                                Prompt Management
+                                            </dt>
+                                            <dd>
+                                                <div class="text-lg font-medium text-gray-900">
+                                                    Manage LLM Prompts
+                                                </div>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-4 py-4 sm:px-6">
+                                <div class="text-sm">
+                                    <a href="/Prompts" class="font-medium text-blue-600 hover:text-blue-500">
+                                        View all prompts
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- User Management Card -->
+                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                            <div class="px-4 py-5 sm:p-6">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
+                                        <svg class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt class="text-sm font-medium text-gray-500 truncate">
+                                                User Management
+                                            </dt>
+                                            <dd>
+                                                <div class="text-lg font-medium text-gray-900">
+                                                    Manage Users
+                                                </div>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-4 py-4 sm:px-6">
+                                <div class="text-sm">
+                                    <a href="#" class="font-medium text-blue-600 hover:text-blue-500">
+                                        View all users
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Add more admin cards as needed -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

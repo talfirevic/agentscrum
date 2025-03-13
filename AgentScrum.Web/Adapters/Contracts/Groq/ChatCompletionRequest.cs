@@ -11,13 +11,13 @@ public class ChatCompletionRequest
     /// Gets or sets the list of messages in the conversation.
     /// </summary>
     [JsonPropertyName("messages")]
-    public List<Message> Messages { get; set; }
+    public required List<Message> Messages { get; set; }
 
     /// <summary>
     /// Gets or sets the model to use for the completion (e.g., "mixtral-8x7b-32768").
     /// </summary>
     [JsonPropertyName("model")]
-    public string Model { get; set; }
+    public required string Model { get; set; }
 
     /// <summary>
     /// Gets or sets the sampling temperature (optional, between 0 and 2).
@@ -47,5 +47,5 @@ public class ChatCompletionRequest
     /// Gets or sets a sequence where the API will stop generating tokens (optional).
     /// </summary>
     [JsonPropertyName("stop")]
-    public string Stop { get; set; }
+    public required string Stop { get; set; }
 }

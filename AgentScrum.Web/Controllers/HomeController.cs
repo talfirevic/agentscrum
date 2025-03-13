@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using AgentScrum.Web.Adapters.Contracts.GoogleDocs;
+using AgentScrum.Web.Data;
 using Microsoft.AspNetCore.Mvc;
 using AgentScrum.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace AgentScrum.Web.Controllers;
 
@@ -11,21 +13,52 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly ApplicationDbContext _context;
     private static readonly Dictionary<string, List<ChatMessage>> _userChatHistory = new();
     private readonly IGoogleDriveAdapter _googleDriveAdapter;
 
-    public HomeController(ILogger<HomeController> logger, SignInManager<IdentityUser> signInManager, IGoogleDriveAdapter googleDriveAdapter)
+    public HomeController(
+        ILogger<HomeController> logger, 
+        SignInManager<IdentityUser> signInManager, 
+        UserManager<IdentityUser> userManager,
+        ApplicationDbContext context,
+        IGoogleDriveAdapter googleDriveAdapter)
     {
         _logger = logger;
         _signInManager = signInManager;
+        _userManager = userManager;
+        _context = context;
         _googleDriveAdapter = googleDriveAdapter;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         if (_signInManager.IsSignedIn(User))
         {
             var userId = User.Identity?.Name ?? string.Empty;
+            
+            // Check if user has valid Google Drive credentials
+            var hasValidCredentials = _googleDriveAdapter.HasValidCredentials();
+            
+            if (!hasValidCredentials)
+            {
+                // Check if user has credentials in the database
+                var dbUserId = _userManager.GetUserId(User);
+                var credentials = await _context.GoogleDriveCredentials
+                    .FirstOrDefaultAsync(c => c.UserId == dbUserId);
+                
+                if (credentials == null)
+                {
+                    // User has no credentials, show a simple notification
+                    TempData["CredentialNotice"] = "Google Drive integration requires credentials setup.";
+                }
+                else
+                {
+                    // User has credentials but there's an issue, show a simple notification
+                    TempData["CredentialNotice"] = "There's an issue with your Google Drive credentials.";
+                }
+            }
             
             if (!_userChatHistory.ContainsKey(userId))
             {

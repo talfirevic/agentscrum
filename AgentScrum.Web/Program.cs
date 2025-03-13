@@ -12,6 +12,8 @@ using Google.Apis.Services;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 using AgentScrum.Web.Models;
+using AgentScrum.Web.Areas.Identity.Data;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,8 +26,31 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+// Configure authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    // Policy for admin access
+    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+    
+    // You can add more granular policies as needed
+    options.AddPolicy("CanManageUsers", policy => 
+        policy.RequireRole("Admin").RequireClaim("Permission", "ManageUsers"));
+        
+    options.AddPolicy("CanViewReports", policy => 
+        policy.RequireRole("Admin").RequireClaim("Permission", "ViewReports"));
+        
+    // Add a policy for the specific admin (super admin)
+    var adminEmail = builder.Configuration["AdminCredentials:Email"] ?? "admin@agentscrum.com";
+    options.AddPolicy("SuperAdminOnly", policy => 
+        policy.AddRequirements(new AgentScrum.Web.Authorization.AdminOnlyRequirement(adminEmail)));
+});
+
+// Register the authorization handler
+builder.Services.AddSingleton<IAuthorizationHandler, AgentScrum.Web.Authorization.AdminOnlyHandler>();
 
 builder.Services.AddScoped<IGroqAdapter>(provider => {
     var configuration = provider.GetRequiredService<IConfiguration>();
@@ -123,7 +148,14 @@ using (var scope = app.Services.CreateScope())
         context.Database.EnsureCreated();
         context.Database.Migrate();
         
-        // Log information about database initializatio
+        // Seed admin user and role
+        var configuration = services.GetRequiredService<IConfiguration>();
+        var adminEmail = configuration["AdminCredentials:Email"] ?? "admin@agentscrum.com";
+        var adminPassword = configuration["AdminCredentials:Password"] ?? "Admin@123456";
+        
+        await SeedData.Initialize(services, adminEmail, adminPassword);
+        
+        // Log information about database initialization
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogInformation("Database initialized successfully");
     }

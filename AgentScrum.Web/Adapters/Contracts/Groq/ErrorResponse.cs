@@ -11,5 +11,5 @@ public class ErrorResponse
     /// Gets or sets the error details.
     /// </summary>
     [JsonPropertyName("error")]
-    public ApiError Error { get; set; }
+    public required ApiError Error { get; set; }
 }

@@ -56,6 +56,15 @@ public class GoogleDriveAdapter : IGoogleDriveAdapter
     }
     
     /// <summary>
+    /// Checks if the adapter has valid credentials.
+    /// </summary>
+    /// <returns>True if valid credentials are set, false otherwise.</returns>
+    public bool HasValidCredentials()
+    {
+        return _driveService != null;
+    }
+    
+    /// <summary>
     /// Creates a DriveService from credentials JSON.
     /// </summary>
     /// <param name="credentialsJson">The Google service account credentials JSON.</param>
@@ -183,5 +192,32 @@ public class GoogleDriveAdapter : IGoogleDriveAdapter
         
         // Execute the request
         request.Execute();
+    }
+    
+    /// <summary>
+    /// Validates if the provided JSON content is a valid Google service account credentials file.
+    /// </summary>
+    /// <param name="jsonContent">The JSON content to validate.</param>
+    /// <returns>True if the JSON is valid Google credentials, false otherwise.</returns>
+    public bool IsValidGoogleCredentialsJson(string jsonContent)
+    {
+        try
+        {
+            // Try to parse the JSON
+            var jsonDocument = System.Text.Json.JsonDocument.Parse(jsonContent);
+            var root = jsonDocument.RootElement;
+            
+            // Check for required fields in Google credentials JSON
+            return root.TryGetProperty("type", out var type) &&
+                   root.TryGetProperty("project_id", out _) &&
+                   root.TryGetProperty("private_key_id", out _) &&
+                   root.TryGetProperty("private_key", out _) &&
+                   root.TryGetProperty("client_email", out _) &&
+                   type.GetString() == "service_account";
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

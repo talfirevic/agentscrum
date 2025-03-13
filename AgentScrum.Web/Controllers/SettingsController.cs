@@ -1,4 +1,5 @@
 using System.Text.Json;
+using AgentScrum.Web.Adapters.Contracts.GoogleDocs;
 using AgentScrum.Web.Data;
 using AgentScrum.Web.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -9,41 +10,60 @@ using Microsoft.EntityFrameworkCore;
 namespace AgentScrum.Web.Controllers;
 
 [Authorize]
-public class SettingsController : Controller
+public class SettingsController(
+    ApplicationDbContext context,
+    UserManager<IdentityUser> userManager,
+    ILogger<SettingsController> logger,
+    IGoogleDriveAdapter googleDriveAdapter)
+    : Controller
 {
-    private readonly ApplicationDbContext _context;
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly ILogger<SettingsController> _logger;
-
-    public SettingsController(
-        ApplicationDbContext context,
-        UserManager<IdentityUser> userManager,
-        ILogger<SettingsController> logger)
-    {
-        _context = context;
-        _userManager = userManager;
-        _logger = logger;
-    }
-
     public async Task<IActionResult> Index()
     {
-        var userId = _userManager.GetUserId(User);
-        var credentials = await _context.GoogleDriveCredentials
+        // Clear ModelState to avoid duplicate error messages
+        ModelState.Clear();
+        
+        var userId = userManager.GetUserId(User);
+        var credentials = await context.GoogleDriveCredentials
             .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        switch (credentials)
+        {
+            // Check if credentials exist but are not valid
+            case { IsValid: false }:
+                ViewData["CredentialError"] = "Your Google Drive credentials are invalid. Please upload a valid credentials file.";
+                break;
+            // Check if credentials are valid but not loaded in the adapter
+            case { IsValid: true } when !googleDriveAdapter.HasValidCredentials():
+                ViewData["CredentialWarning"] = "Your credentials are valid but not currently loaded. Please try refreshing the page or contact support if the issue persists.";
+                break;
+            // Check if no credentials exist
+            case null:
+                ViewData["CredentialInfo"] = "You haven't uploaded Google Drive credentials yet. Some features may not work until you upload valid credentials.";
+                break;
+        }
         
         return View(credentials);
     }
     
     [HttpPost]
-    public async Task<IActionResult> UploadGoogleCredentials(IFormFile credentialsFile)
+    public async Task<IActionResult> UploadGoogleCredentials(IFormFile? credentialsFile)
     {
+        // Clear ModelState to avoid duplicate error messages
+        ModelState.Clear();
+        
         if (credentialsFile == null || credentialsFile.Length == 0)
         {
-            ModelState.AddModelError("", "Please select a file to upload.");
-            return RedirectToAction(nameof(Index));
+            // Only set ViewData, don't add to ModelState
+            ViewData["CredentialError"] = "Please select a file to upload.";
+            
+            var currentUserId = userManager.GetUserId(User);
+            var credentials = await context.GoogleDriveCredentials
+                .FirstOrDefaultAsync(c => c.UserId == currentUserId);
+            
+            return View("Index", credentials);
         }
 
-        var userId = _userManager.GetUserId(User);
+        var userId = userManager.GetUserId(User);
         
         try
         {
@@ -51,16 +71,21 @@ public class SettingsController : Controller
             using var streamReader = new StreamReader(credentialsFile.OpenReadStream());
             var jsonContent = await streamReader.ReadToEndAsync();
             
-            // Validate JSON format
-            var isValidJson = IsValidGoogleCredentialsJson(jsonContent);
+            // Validate JSON format using the adapter
+            var isValidJson = googleDriveAdapter.IsValidGoogleCredentialsJson(jsonContent);
             if (!isValidJson)
             {
-                ModelState.AddModelError("", "The uploaded file is not a valid Google credentials JSON file.");
-                return RedirectToAction(nameof(Index));
+                // Only set ViewData, don't add to ModelState
+                ViewData["CredentialError"] = "The uploaded file is not a valid Google credentials JSON file. Please check the file and try again.";
+                
+                var credentials = await context.GoogleDriveCredentials
+                    .FirstOrDefaultAsync(c => c.UserId == userId);
+                
+                return View("Index", credentials);
             }
             
             // Check if user already has credentials
-            var existingCredentials = await _context.GoogleDriveCredentials
+            var existingCredentials = await context.GoogleDriveCredentials
                 .FirstOrDefaultAsync(c => c.UserId == userId);
             
             if (existingCredentials != null)
@@ -71,55 +96,55 @@ public class SettingsController : Controller
                 existingCredentials.UploadedAt = DateTime.UtcNow;
                 existingCredentials.LastValidatedAt = DateTime.UtcNow;
                 
-                _context.GoogleDriveCredentials.Update(existingCredentials);
+                context.GoogleDriveCredentials.Update(existingCredentials);
             }
             else
             {
                 // Create new credentials
                 var newCredentials = new GoogleDriveCredentials
                 {
-                    UserId = userId,
+                    UserId = userId!,
                     CredentialsJson = jsonContent,
                     IsValid = true,
                     UploadedAt = DateTime.UtcNow,
-                    LastValidatedAt = DateTime.UtcNow
+                    LastValidatedAt = DateTime.UtcNow,
+                    Id = 0,
                 };
                 
-                _context.GoogleDriveCredentials.Add(newCredentials);
+                context.GoogleDriveCredentials.Add(newCredentials);
             }
             
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             
-            TempData["SuccessMessage"] = "Google Drive credentials uploaded successfully.";
+            // Try to set the credentials on the adapter
+            try
+            {
+                googleDriveAdapter.SetCredentials(jsonContent);
+                TempData["SuccessMessage"] = "Google Drive credentials uploaded and validated successfully.";
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error setting credentials on the adapter");
+                ViewData["CredentialWarning"] = "Credentials were saved but could not be loaded. Please try refreshing the page.";
+                
+                var credentials = await context.GoogleDriveCredentials
+                    .FirstOrDefaultAsync(c => c.UserId == userId);
+                
+                return View("Index", credentials);
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error uploading Google Drive credentials");
-            ModelState.AddModelError("", "An error occurred while uploading the credentials.");
+            logger.LogError(ex, "Error uploading Google Drive credentials");
+            // Only set ViewData, don't add to ModelState
+            ViewData["CredentialError"] = "An error occurred while uploading the credentials. Please try again.";
+            
+            var credentials = await context.GoogleDriveCredentials
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+            
+            return View("Index", credentials);
         }
         
         return RedirectToAction(nameof(Index));
-    }
-    
-    private bool IsValidGoogleCredentialsJson(string jsonContent)
-    {
-        try
-        {
-            // Try to parse the JSON
-            var jsonDocument = JsonDocument.Parse(jsonContent);
-            var root = jsonDocument.RootElement;
-            
-            // Check for required fields in Google credentials JSON
-            return root.TryGetProperty("type", out var type) &&
-                   root.TryGetProperty("project_id", out _) &&
-                   root.TryGetProperty("private_key_id", out _) &&
-                   root.TryGetProperty("private_key", out _) &&
-                   root.TryGetProperty("client_email", out _) &&
-                   type.GetString() == "service_account";
-        }
-        catch
-        {
-            return false;
-        }
     }
 } 

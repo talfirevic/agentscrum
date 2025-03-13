@@ -12,4 +12,5 @@ public class ApplicationDbContext : IdentityDbContext
     }
     
     public DbSet<GoogleDriveCredentials> GoogleDriveCredentials { get; set; }
+    public DbSet<Prompt> Prompts { get; set; }
 }

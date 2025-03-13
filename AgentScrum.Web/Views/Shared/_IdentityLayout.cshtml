@@ -7,7 +7,6 @@
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/css/identity.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/AgentScrum.Web.styles.css" asp-append-version="true"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -33,6 +32,13 @@
             }
         }
     </script>
+    <!-- Process Tailwind directives -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            tailwind.refresh();
+        });
+    </script>
+    <!-- Add direct Tailwind styles for Identity pages -->
 </head>
 <body class="bg-gray-50 min-h-screen">
 <header>
@@ -66,10 +72,8 @@
     </nav>
 </header>
 
-<main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="px-4 py-6 sm:px-0">
-        @RenderBody()
-    </div>
+<main>
+    @RenderBody()
 </main>
 
 <footer class="bg-white mt-12 border-t border-gray-200">
@@ -81,6 +85,111 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
+<!-- Add script to apply Tailwind classes to Identity UI elements -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Skip applying classes if we're on the login page
+        if (window.location.pathname.includes('/Identity/Account/Login')) {
+            return;
+        }
+        
+        // Apply Tailwind classes to form elements
+        document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]').forEach(input => {
+            if (!input.classList.contains('form-control')) {
+                input.classList.add('block', 'w-full', 'px-3', 'py-2', 'border', 'border-gray-300', 'rounded-md', 'shadow-sm', 'focus:outline-none', 'focus:ring-blue-500', 'focus:border-blue-500', 'sm:text-sm');
+            }
+        });
+        
+        // Apply Tailwind classes to form-control elements
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.classList.add('block', 'w-full', 'px-3', 'py-2', 'border', 'border-gray-300', 'rounded-md', 'shadow-sm', 'focus:outline-none', 'focus:ring-blue-500', 'focus:border-blue-500', 'sm:text-sm');
+        });
+        
+        // Apply Tailwind classes to buttons
+        document.querySelectorAll('button[type="submit"], input[type="submit"]').forEach(button => {
+            if (!button.classList.contains('btn-primary')) {
+                button.classList.add('inline-flex', 'justify-center', 'py-2', 'px-4', 'border', 'border-transparent', 'shadow-sm', 'text-sm', 'font-medium', 'rounded-md', 'text-white', 'bg-blue-600', 'hover:bg-blue-700', 'focus:outline-none', 'focus:ring-2', 'focus:ring-offset-2', 'focus:ring-blue-500');
+            }
+        });
+        
+        // Apply Tailwind classes to primary buttons
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            button.classList.add('inline-flex', 'justify-center', 'py-2', 'px-4', 'border', 'border-transparent', 'shadow-sm', 'text-sm', 'font-medium', 'rounded-md', 'text-white', 'bg-blue-600', 'hover:bg-blue-700', 'focus:outline-none', 'focus:ring-2', 'focus:ring-offset-2', 'focus:ring-blue-500');
+        });
+        
+        // Apply Tailwind classes to secondary buttons
+        document.querySelectorAll('.btn-secondary').forEach(button => {
+            button.classList.add('inline-flex', 'justify-center', 'py-2', 'px-4', 'border', 'border-gray-300', 'shadow-sm', 'text-sm', 'font-medium', 'rounded-md', 'text-gray-700', 'bg-white', 'hover:bg-gray-50', 'focus:outline-none', 'focus:ring-2', 'focus:ring-offset-2', 'focus:ring-blue-500');
+        });
+        
+        // Apply Tailwind classes to danger buttons
+        document.querySelectorAll('.btn-danger').forEach(button => {
+            button.classList.add('inline-flex', 'justify-center', 'py-2', 'px-4', 'border', 'border-transparent', 'shadow-sm', 'text-sm', 'font-medium', 'rounded-md', 'text-white', 'bg-red-600', 'hover:bg-red-700', 'focus:outline-none', 'focus:ring-2', 'focus:ring-offset-2', 'focus:ring-red-500');
+        });
+        
+        // Apply Tailwind classes to form groups
+        document.querySelectorAll('.form-group').forEach(group => {
+            group.classList.add('mb-4');
+        });
+        
+        // Apply Tailwind classes to labels
+        document.querySelectorAll('label').forEach(label => {
+            if (!label.closest('.form-check') && !label.closest('.form-floating')) {
+                label.classList.add('block', 'text-sm', 'font-medium', 'text-gray-700', 'mb-1');
+            }
+        });
+        
+        // Apply Tailwind classes to validation errors
+        document.querySelectorAll('.text-danger').forEach(element => {
+            element.classList.add('text-red-500', 'text-sm', 'mt-1');
+        });
+        
+        // Apply Tailwind classes to validation summary
+        document.querySelectorAll('.validation-summary-errors').forEach(element => {
+            element.classList.add('bg-red-50', 'border-l-4', 'border-red-400', 'p-4', 'mb-4');
+        });
+        
+        // Apply Tailwind classes to validation summary lists
+        document.querySelectorAll('.validation-summary-errors ul').forEach(element => {
+            element.classList.add('list-disc', 'pl-5', 'text-sm', 'text-red-700');
+        });
+        
+        // Apply Tailwind classes to cards
+        document.querySelectorAll('.card').forEach(element => {
+            element.classList.add('bg-white', 'overflow-hidden', 'shadow', 'rounded-lg');
+        });
+        
+        // Apply Tailwind classes to card headers
+        document.querySelectorAll('.card-header').forEach(element => {
+            element.classList.add('px-4', 'py-5', 'sm:px-6', 'bg-gray-50', 'border-b', 'border-gray-200');
+        });
+        
+        // Apply Tailwind classes to card bodies
+        document.querySelectorAll('.card-body').forEach(element => {
+            element.classList.add('px-4', 'py-5', 'sm:p-6');
+        });
+        
+        // Apply Tailwind classes to card footers
+        document.querySelectorAll('.card-footer').forEach(element => {
+            element.classList.add('px-4', 'py-4', 'sm:px-6', 'bg-gray-50', 'border-t', 'border-gray-200');
+        });
+        
+        // Apply Tailwind classes to account page container
+        document.querySelectorAll('.account-page-container').forEach(element => {
+            element.classList.add('mx-auto', 'bg-white', 'p-6', 'rounded-lg', 'shadow-md');
+        });
+        
+        // Apply Tailwind classes to identity container
+        document.querySelectorAll('.identity-container').forEach(element => {
+            element.classList.add('mx-auto');
+        });
+        
+        // Make identity forms wider
+        document.querySelectorAll('#account, #external-login, #registerForm, #forgot-password').forEach(element => {
+            element.classList.add('w-full');
+        });
+    });
+</script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html> 

@@ -1,0 +1,87 @@
+﻿@page
+@model RegisterConfirmationModel
+@{
+    ViewData["Title"] = "Registration Confirmation";
+    Layout = "_IdentityLayout";
+}
+
+<div class="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Registration Confirmation
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+            Your account has been created successfully
+        </p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <div class="rounded-md bg-blue-50 p-4 mb-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-blue-800">Email Confirmation</h3>
+                        <div class="mt-2 text-sm text-blue-700">
+                            @if (Model.DisplayConfirmAccountLink)
+                            {
+                                <p>
+                                    This app does not currently have a real email sender registered.
+                                </p>
+                                <p class="mt-2">
+                                    Normally this would be emailed, but you can confirm your account by clicking the link below:
+                                </p>
+                                <p class="mt-4">
+                                    <a id="confirm-link" href="@Model.EmailConfirmationUrl" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        Confirm your account
+                                    </a>
+                                </p>
+                                <p class="mt-4 text-xs text-gray-500">
+                                    <a href="https://aka.ms/aspaccountconf" class="text-blue-600 hover:text-blue-500">
+                                        Learn how to configure a real email sender
+                                    </a>
+                                </p>
+                            }
+                            else
+                            {
+                                <p>
+                                    Please check your email to confirm your account.
+                                </p>
+                                <p class="mt-2">
+                                    If you don't see the email in your inbox, please check your spam folder.
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">
+                            What's next?
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="mt-6 grid grid-cols-1 gap-3">
+                    <a href="/" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        Return to home page
+                    </a>
+                    <a href="/Identity/Account/Login" class="w-full inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Sign in to your account
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
